@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.noa.demo.mapper.ExamPaperMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.ExamPaper">
+        <id column="paper_id" property="paperId"/>
+        <result column="exam_id" property="examId"/>
+        <result column="paper_template_path" property="paperTemplatePath"/>
+        <result column="answer_template_path" property="answerTemplatePath"/>
+        <result column="ocr_config" property="ocrConfig"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 获取试卷详细信息 -->
+    <select id="getPaperDetail" resultMap="BaseResultMap">
+        SELECT p.*, e.title as exam_title, e.exam_date, e.start_time, e.end_time
+        FROM exam_paper p
+        INNER JOIN exam_information e ON p.exam_id = e.exam_id
+        WHERE p.paper_id = #{paperId}
+    </select>
+</mapper>

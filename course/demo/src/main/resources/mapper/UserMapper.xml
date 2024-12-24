@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.User">
+        <id column="id" property="id" /> <!-- 主键 -->
+        <result column="name" property="name" /> <!-- 姓名 -->
+        <result column="password" property="password" /> <!-- 密码 -->
+        <result column="phone" property="phone" /> <!-- 电话 -->
+        <result column="role_id" property="roleId" /> <!-- 角色 -->
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, password, phone, role_id <!-- 更新为 password -->
+    </sql>
+
+    <!-- 查询语句 -->
+    <select id="pageC" resultType="com.noa.demo.entity.User">
+        select <include refid="Base_Column_List" /> from user
+    </select>
+
+    <select id="pageCC" resultType="com.noa.demo.entity.User">
+        select <include refid="Base_Column_List" /> from user ${ew.customSqlSegment}
+    </select>
+
+    <select id="findUser" resultType="com.noa.demo.entity.User">
+        SELECT id, name, phone, role_id
+        FROM user
+        WHERE (id = #{id} AND password = #{password}) LIMIT 1
+    </select>
+
+
+    <!-- 插入语句 -->
+    <insert id="insert" parameterType="com.noa.demo.entity.User">
+        INSERT INTO user (id, name, password, phone, role_id) <!-- 更新为 password -->
+        VALUES (#{id}, #{name}, #{password}, #{phone}, #{roleId}) <!-- 更新为 password -->
+    </insert>
+
+</mapper>

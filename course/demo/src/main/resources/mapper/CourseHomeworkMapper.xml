@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseHomeworkMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseHomework">
+        <id column="homework_id" property="homeworkId" />
+        <result column="course_id" property="courseId" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="attachment_path" property="attachmentPath" />
+        <result column="start_time" property="startTime" />
+        <result column="deadline" property="deadline" />
+        <result column="total_score" property="totalScore" />
+        <result column="publisher_id" property="publisherId" />
+        <result column="publish_time" property="publishTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        homework_id, course_id, title, description, attachment_path, start_time, deadline,
+        total_score, publisher_id, publish_time, status
+    </sql>
+
+    <!-- 获取作业统计信息 -->
+    <select id="getHomeworkStats" resultType="java.util.Map">
+        SELECT
+            AVG(score) as avgScore,
+            MAX(score) as maxScore,
+            MIN(score) as minScore,
+            COUNT(*) as totalSubmissions,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as gradedCount
+        FROM homework_submission
+        WHERE homework_id = #{homeworkId}
+    </select>
+
+    <!-- 查询课程的所有作业（包含提交统计） -->
+    <select id="listHomeworkWithStats" resultType="java.util.Map">
+        SELECT
+            h.*,
+            COUNT(s.submission_id) as submitCount,
+            AVG(s.score) as avgScore
+        FROM course_homework h
+                 LEFT JOIN homework_submission s ON h.homework_id = s.homework_id
+        WHERE h.course_id = #{courseId}
+        GROUP BY h.homework_id
+            ${ew.customSqlSegment}
+    </select>
+</mapper>

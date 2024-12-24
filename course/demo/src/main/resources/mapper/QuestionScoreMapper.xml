@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.noa.demo.mapper.QuestionScoreMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.QuestionScore">
+        <id column="score_id" property="scoreId"/>
+        <result column="answer_id" property="answerId"/>
+        <result column="question_id" property="questionId"/>
+        <result column="student_answer" property="studentAnswer"/>
+        <result column="score" property="score"/>
+        <result column="is_correct" property="isCorrect"/>
+        <result column="comment" property="comment"/>
+    </resultMap>
+
+    <!-- 获取答卷的所有题目得分 -->
+    <select id="getAnswerScores" resultType="com.noa.demo.entity.QuestionScore">
+        SELECT qs.*,
+               eq.question_type,
+               eq.question_content,
+               eq.standard_answer,
+               eq.score as full_score
+        FROM question_score qs
+                 JOIN exam_question eq ON qs.question_id = eq.question_id
+        WHERE qs.answer_id = #{answerId}
+        ORDER BY eq.question_order
+    </select>
+
+
+    <!-- 统计考试成绩分布 -->
+    <select id="getScoreDistribution" resultType="java.util.Map">
+        SELECT
+        COUNT(*) as student_count,
+        CASE
+        WHEN total_score >= 90 THEN '优秀'
+        WHEN total_score >= 80 THEN '良好'
+        WHEN total_score >= 60 THEN '及格'
+        ELSE '不及格'
+        END as grade_level
+        FROM student_answer
+        WHERE exam_id = #{examId}
+        GROUP BY grade_level
+        ORDER BY MIN(total_score) DESC
+    </select>
+
+    <!-- 获取考试所有成绩 -->
+    <select id="getExamScores" resultType="com.noa.demo.entity.QuestionScore">
+        SELECT qs.*
+        FROM question_score qs
+                 JOIN student_answer sa ON qs.answer_id = sa.answer_id
+        WHERE sa.exam_id = #{examId}
+    </select>
+</mapper>

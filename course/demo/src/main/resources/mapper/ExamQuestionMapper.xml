@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.noa.demo.mapper.ExamQuestionMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.ExamQuestion">
+        <id column="question_id" property="questionId"/>
+        <result column="paper_id" property="paperId"/>
+        <result column="question_type" property="questionType"/>
+        <result column="question_content" property="questionContent"/>
+        <result column="standard_answer" property="standardAnswer"/>
+        <result column="score" property="score"/>
+        <result column="question_order" property="questionOrder"/>
+        <result column="options_json" property="optionsJson"/>
+    </resultMap>
+
+    <!-- 获取试卷的所有试题 -->
+    <select id="getPaperQuestions" resultType="com.noa.demo.entity.ExamQuestion">
+        SELECT *
+        FROM exam_question
+        WHERE paper_id = #{paperId}
+        ORDER BY question_order
+    </select>
+
+    <!-- 根据题型获取试题 -->
+    <select id="getQuestionsByType" resultType="com.noa.demo.entity.ExamQuestion">
+        SELECT *
+        FROM exam_question
+        WHERE paper_id = #{paperId}
+          AND question_type = #{questionType}
+        ORDER BY question_order
+    </select>
+
+    <!-- 获取乱序后的选项 -->
+    <select id="getRandomizedOptions" resultType="java.lang.String">
+        SELECT
+            CASE
+                WHEN #{questionVersion} = 'A' THEN options_json
+                WHEN #{questionVersion} = 'B' THEN
+                    JSON_ARRAY(
+                            JSON_EXTRACT(options_json, '$[1]'),
+                            JSON_EXTRACT(options_json, '$[0]'),
+                            JSON_EXTRACT(options_json, '$[3]'),
+                            JSON_EXTRACT(options_json, '$[2]')
+                    )
+                WHEN #{questionVersion} = 'C' THEN
+                    JSON_ARRAY(
+                            JSON_EXTRACT(options_json, '$[2]'),
+                            JSON_EXTRACT(options_json, '$[3]'),
+                            JSON_EXTRACT(options_json, '$[0]'),
+                            JSON_EXTRACT(options_json, '$[1]')
+                    )
+                ELSE options_json
+                END
+        FROM exam_question
+        WHERE question_id = #{questionId}
+    </select>
+
+    <!-- 根据考试ID获取试题 -->
+    <select id="getQuestionsByExamId" resultType="com.noa.demo.entity.ExamQuestion">
+        SELECT q.*
+        FROM exam_question q
+                 JOIN exam_paper p ON q.paper_id = p.paper_id
+        WHERE p.exam_id = #{examId}
+        ORDER BY q.question_order
+    </select>
+</mapper>

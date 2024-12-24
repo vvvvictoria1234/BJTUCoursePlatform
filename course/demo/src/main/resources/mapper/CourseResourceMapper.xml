@@ -1,0 +1,31 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseResourceMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseResource">
+        <id column="resource_id" property="resourceId" />
+        <result column="course_id" property="courseId" />
+        <result column="file_name" property="fileName" />
+        <result column="file_path" property="filePath" />
+        <result column="file_type" property="fileType" />
+        <result column="upload_time" property="uploadTime" />
+    </resultMap>
+
+    <!-- CourseResourceMapper.xml -->
+    <select id="selectById" resultType="com.noa.demo.entity.CourseResource">
+        SELECT * FROM course_resource
+        WHERE resource_id = #{resourceId}
+    </select>
+
+    <sql id="Base_Column_List">
+        resource_id, course_id, file_name, file_path, file_type, upload_time
+    </sql>
+
+    <select id="getCourseResourcesByType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM course_resource
+        WHERE course_id = #{courseId}
+        <if test="fileType != null and fileType != ''">
+            AND file_type = #{fileType}
+        </if>
+        ORDER BY upload_time DESC
+    </select>
+</mapper>

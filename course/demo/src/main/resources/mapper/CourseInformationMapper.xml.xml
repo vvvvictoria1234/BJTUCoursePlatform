@@ -1,0 +1,39 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseInformationMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseInformation">
+        <id column="course_id" property="courseId" />
+        <result column="calendar" property="calendar" />
+        <result column="course_description" property="courseDescription" />
+        <result column="course_name" property="courseName" />
+        <result column="syllabus" property="syllabus" />
+        <result column="teacher_id" property="teacherId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        course_id, calendar, course_description, course_name, syllabus, teacher_id
+    </sql>
+
+    <select id="selectCourseWithTeacher" resultType="java.util.Map">
+        SELECT
+            c.*,
+            u.name as teacher_name
+        FROM course_information c
+                 LEFT JOIN user u ON c.teacher_id = u.id
+        WHERE c.course_id = #{courseId}
+    </select>
+    <select id="getTeacherCourses" resultMap="BaseResultMap">
+        SELECT
+            c.*
+        FROM course_information c
+        WHERE c.teacher_id = #{teacherId}
+    </select>
+
+    <select id="getStudentCourses" resultMap="BaseResultMap">
+        SELECT
+            c.*
+        FROM course_information c
+                 INNER JOIN course_selection cs ON c.course_id = cs.course_id
+        WHERE cs.student_id = #{studentId}
+          AND cs.status = 1
+    </select>
+</mapper>

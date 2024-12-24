@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- ExamInformationMapper.xml -->
+<mapper namespace="com.noa.demo.mapper.ExamInformationMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.ExamInformation">
+        <id column="exam_id" property="examId"/>
+        <result column="course_id" property="courseId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="exam_date" property="examDate"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="total_score" property="totalScore"/>
+        <result column="teacher_id" property="teacherId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        exam_id, course_id, title, description, exam_date, start_time, end_time,
+        total_score, teacher_id, create_time, status
+    </sql>
+
+    <!-- 获取教师创建的所有考试 -->
+    <select id="getTeacherExams" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM exam_information
+        WHERE teacher_id = #{teacherId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 获取课程的所有考试 -->
+    <select id="getCourseExams" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM exam_information
+        WHERE course_id = #{courseId}
+        ORDER BY exam_date DESC, start_time DESC
+    </select>
+</mapper>

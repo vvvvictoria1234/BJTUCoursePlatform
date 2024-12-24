@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- ExamArrangementMapper.xml -->
+<mapper namespace="com.noa.demo.mapper.ExamArrangementMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.ExamArrangement">
+        <id column="arrangement_id" property="arrangementId"/>
+        <result column="exam_id" property="examId"/>
+        <result column="classroom_id" property="classroomId"/>
+        <result column="is_random_seating" property="isRandomSeating"/>
+        <result column="invigilator_id" property="invigilatorId"/>
+    </resultMap>
+
+
+    <select id="getExamArrangements" resultType="java.util.Map">
+        SELECT
+            a.arrangement_id as arrangementId,
+            a.exam_id as examId,
+            a.classroom_id as classroomId,
+            a.is_random_seating as isRandomSeating,
+            a.invigilator_id as invigilatorId,
+            c.building_name as buildingName,
+            c.room_number as roomNumber,
+            u.name as invigilatorName
+        FROM exam_arrangement a
+                 LEFT JOIN classroom c ON a.classroom_id = c.classroom_id
+                 LEFT JOIN user u ON a.invigilator_id = u.id
+        WHERE a.exam_id = #{examId}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM exam_arrangement ea
+                 JOIN exam_information ei ON ea.exam_id = ei.exam_id
+        WHERE ea.classroom_id = #{classroomId}
+          AND ei.exam_date = #{date}
+    </select>
+</mapper>

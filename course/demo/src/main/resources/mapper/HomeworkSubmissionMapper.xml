@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.HomeworkSubmissionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.HomeworkSubmission">
+        <id column="submission_id" property="submissionId" />
+        <result column="homework_id" property="homeworkId" />
+        <result column="student_id" property="studentId" />
+        <result column="content" property="content" />
+        <result column="attachment_path" property="attachmentPath" />
+        <result column="submit_time" property="submitTime" />
+        <result column="score" property="score" />
+        <result column="feedback" property="feedback" />
+        <result column="grade_time" property="gradeTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        submission_id, homework_id, student_id, content, attachment_path, submit_time,
+        score, feedback, grade_time, status
+    </sql>
+
+    <!-- 查询作业提交详情（带学生信息） -->
+    <select id="getSubmissionDetail" resultType="java.util.Map">
+        SELECT
+            s.*,
+            u.name as studentName
+        FROM homework_submission s
+                 LEFT JOIN user u ON s.student_id = u.id
+        WHERE s.submission_id = #{submissionId}
+    </select>
+
+    <!-- 查询作业的所有提交（分页） -->
+    <select id="pageSubmissions" resultType="java.util.Map">
+        SELECT
+            s.*,
+            u.name as studentName
+        FROM homework_submission s
+                 LEFT JOIN user u ON s.student_id = u.id
+        WHERE s.homework_id = #{homeworkId}
+            ${ew.customSqlSegment}
+    </select>
+
+    <!-- 查询学生的作业提交记录 -->
+    <select id="listStudentSubmissions" resultType="java.util.Map">
+        SELECT
+            s.*,
+            h.title as homeworkTitle,
+            h.deadline
+        FROM homework_submission s
+                 LEFT JOIN course_homework h ON s.homework_id = h.homework_id
+        WHERE s.student_id = #{studentId}
+          AND h.course_id = #{courseId}
+            ${ew.customSqlSegment}
+    </select>
+
+    <!-- 获取提交详情 -->
+    <select id="getSubmissionDetail" resultType="java.util.Map">
+        SELECT
+            s.*,
+            u.name as studentName,
+            u.id as studentId
+        FROM homework_submission s
+                 LEFT JOIN user u ON s.student_id = u.id
+        WHERE s.submission_id = #{submissionId}
+    </select>
+</mapper>

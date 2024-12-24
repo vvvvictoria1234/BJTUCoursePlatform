@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseQaRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseQaRecord">
+        <id column="qa_id" property="qaId" />
+        <result column="course_id" property="courseId" />
+        <result column="student_id" property="studentId" />
+        <result column="question" property="question" />
+        <result column="answer" property="answer" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        qa_id, course_id, student_id, question, answer, created_at
+    </sql>
+
+    <!-- 根据ID查询问答记录 -->
+    <select id="selectByQaId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM course_qa_record
+        WHERE qa_id = #{qaId}
+    </select>
+
+    <!-- 查询学生的问答历史记录 -->
+    <select id="selectStudentHistory" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM course_qa_record
+        WHERE student_id = #{studentId}
+        AND course_id = #{courseId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 插入新的问答记录 -->
+    <insert id="insert" parameterType="com.noa.demo.entity.CourseQaRecord" useGeneratedKeys="true" keyProperty="qaId">
+        INSERT INTO course_qa_record (
+            course_id, student_id, question, answer
+        ) VALUES (
+                     #{courseId}, #{studentId}, #{question}, #{answer}
+                 )
+    </insert>
+
+    <!-- 更新问答记录 -->
+    <update id="updateById" parameterType="com.noa.demo.entity.CourseQaRecord">
+        UPDATE course_qa_record
+        <set>
+            <if test="question != null">
+                question = #{question},
+            </if>
+            <if test="answer != null">
+                answer = #{answer},
+            </if>
+        </set>
+        WHERE qa_id = #{qaId}
+    </update>
+
+    <!-- 删除问答记录 -->
+    <delete id="deleteById">
+        DELETE FROM course_qa_record
+        WHERE qa_id = #{qaId}
+    </delete>
+
+    <!-- 分页查询课程的所有问答记录 -->
+    <select id="selectPageByCourseId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM course_qa_record
+        WHERE course_id = #{courseId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 批量插入问答记录 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO course_qa_record (
+        course_id, student_id, question, answer
+        ) VALUES
+        <foreach collection="records" item="record" separator=",">
+            (#{record.courseId}, #{record.studentId},
+            #{record.question}, #{record.answer})
+        </foreach>
+    </insert>
+
+    <!-- 根据时间范围查询问答记录 -->
+    <select id="selectByTimeRange" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM course_qa_record
+        WHERE course_id = #{courseId}
+        AND created_at BETWEEN #{startTime} AND #{endTime}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 统计课程问答数量 -->
+    <select id="countByCourseId" resultType="int">
+        SELECT COUNT(*)
+        FROM course_qa_record
+        WHERE course_id = #{courseId}
+    </select>
+
+    <!-- 统计学生问答数量 -->
+    <select id="countByStudentId" resultType="int">
+        SELECT COUNT(*)
+        FROM course_qa_record
+        WHERE student_id = #{studentId}
+          AND course_id = #{courseId}
+    </select>
+
+</mapper>

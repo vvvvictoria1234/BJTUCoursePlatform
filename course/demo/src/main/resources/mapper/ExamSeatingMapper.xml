@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.ExamSeatingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.ExamSeating">
+        <id column="seating_id" property="seatingId"/>
+        <result column="arrangement_id" property="arrangementId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="seat_row" property="seatRow"/>
+        <result column="seat_column" property="seatColumn"/>
+        <result column="question_version" property="questionVersion"/>
+    </resultMap>
+
+    <!-- 带扩展信息的结果映射 -->
+    <resultMap id="SeatingWithInfoMap" type="java.util.Map">
+        <id column="seating_id" property="seatingId"/>
+        <result column="arrangement_id" property="arrangementId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="student_name" property="studentName"/>
+        <result column="seat_row" property="seatRow"/>
+        <result column="seat_column" property="seatColumn"/>
+        <result column="question_version" property="questionVersion"/>
+        <result column="building_name" property="buildingName"/>
+        <result column="room_number" property="roomNumber"/>
+    </resultMap>
+
+    <!-- 获取考场的所有座位安排（包含学生信息） -->
+    <select id="getArrangementSeating" resultMap="SeatingWithInfoMap">
+        SELECT
+            s.seating_id,
+            s.arrangement_id,
+            s.student_id,
+            u.name as student_name,
+            s.seat_row,
+            s.seat_column,
+            s.question_version,
+            c.building_name,
+            c.room_number
+        FROM exam_seating s
+                 LEFT JOIN user u ON s.student_id = u.id
+                 LEFT JOIN exam_arrangement a ON s.arrangement_id = a.arrangement_id
+                 LEFT JOIN classroom c ON a.classroom_id = c.classroom_id
+        WHERE s.arrangement_id = #{arrangementId}
+        ORDER BY s.seat_row, s.seat_column
+    </select>
+
+    <!-- 获取学生的座位信息 -->
+    <select id="getStudentSeating" resultMap="BaseResultMap">
+        SELECT
+            s.*
+        FROM exam_seating s
+                 INNER JOIN exam_arrangement a ON s.arrangement_id = a.arrangement_id
+        WHERE s.student_id = #{studentId}
+          AND a.exam_id = #{examId}
+            LIMIT 1
+    </select>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.PostBookmarkMapper">
+
+    <!-- 收藏记录的基本映射 -->
+    <resultMap id="BookmarkResultMap" type="com.noa.demo.entity.PostBookmark">
+        <id column="id" property="id" />
+        <result column="post_id" property="postId" />
+        <result column="user_id" property="userId" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <!-- 带帖子信息的收藏映射 -->
+    <resultMap id="BookmarkWithPostMap" type="com.noa.demo.entity.Post">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="content" property="content" />
+        <result column="image_url" property="imageUrl" />
+        <result column="likes_count" property="likesCount" />
+        <result column="bookmarks_count" property="bookmarksCount" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+        <result column="bookmark_time" property="bookmarkTime" />
+    </resultMap>
+
+    <!-- 通用查询列 -->
+    <sql id="Base_Column_List">
+        id, post_id, user_id, created_at
+    </sql>
+</mapper>

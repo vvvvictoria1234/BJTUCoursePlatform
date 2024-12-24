@@ -1,0 +1,25 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseNoticeMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseNotice">
+        <id column="notice_id" property="noticeId" />
+        <result column="course_id" property="courseId" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="publish_time" property="publishTime" />
+        <result column="publisher_id" property="publisherId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        notice_id, course_id, title, content, publish_time, publisher_id
+    </sql>
+
+    <select id="getNoticesWithPublisher" resultType="java.util.Map">
+        SELECT
+            n.*,
+            u.name as publisher_name
+        FROM course_notice n
+                 LEFT JOIN user u ON n.publisher_id = u.id
+        WHERE n.course_id = #{courseId}
+        ORDER BY n.publish_time DESC
+    </select>
+</mapper>

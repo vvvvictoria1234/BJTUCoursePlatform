@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.noa.demo.mapper.StudentAnswerMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.StudentAnswer">
+        <id column="answer_id" property="answerId"/>
+        <result column="exam_id" property="examId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="answer_paper_path" property="answerPaperPath"/>
+        <result column="upload_time" property="uploadTime"/>
+        <result column="total_score" property="totalScore"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 获取学生答卷详情 -->
+    <select id="getStudentAnswerDetail" resultMap="BaseResultMap">
+        SELECT sa.*, u.name as student_name, e.title as exam_title
+        FROM student_answer sa
+        INNER JOIN user u ON sa.student_id = u.id
+        INNER JOIN exam_information e ON sa.exam_id = e.exam_id
+        WHERE sa.answer_id = #{answerId}
+    </select>
+
+    <!-- 获取考试的所有答卷 -->
+    <select id="getExamAnswers" resultMap="BaseResultMap">
+        SELECT sa.*, u.name as student_name
+        FROM student_answer sa
+        INNER JOIN user u ON sa.student_id = u.id
+        WHERE sa.exam_id = #{examId}
+        ORDER BY sa.upload_time DESC
+    </select>
+
+    <!-- 获取待批改的答卷 -->
+    <select id="getPendingAnswers" resultMap="BaseResultMap">
+        SELECT sa.*, e.title as exam_title
+        FROM student_answer sa
+        INNER JOIN exam_information e ON sa.exam_id = e.exam_id
+        WHERE sa.status = 0
+        ORDER BY sa.upload_time ASC
+    </select>
+</mapper>

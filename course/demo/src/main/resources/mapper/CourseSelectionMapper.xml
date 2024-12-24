@@ -1,0 +1,40 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CourseSelectionMapper">
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.CourseSelection">
+        <id column="selection_id" property="selectionId" />
+        <result column="course_id" property="courseId" />
+        <result column="student_id" property="studentId" />
+        <result column="select_time" property="selectTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        selection_id, course_id, student_id, select_time, status
+    </sql>
+
+    <select id="getStudentsByCourseId" resultType="com.noa.demo.entity.User">
+        SELECT
+            u.id,
+            u.name,
+            u.phone,
+            u.role_id
+        FROM user u
+                 JOIN course_selection cs ON u.id = cs.student_id
+        WHERE cs.course_id = #{courseId}
+          AND cs.status = 1
+        ORDER BY cs.select_time DESC
+    </select>
+
+    <select id="getCoursesByStudentId" resultType="java.util.Map">
+        SELECT
+            c.*,
+            cs.select_time,
+            u.name as teacher_name
+        FROM course_selection cs
+                 JOIN course_information c ON cs.course_id = c.course_id
+                 LEFT JOIN user u ON c.teacher_id = u.id
+        WHERE cs.student_id = #{studentId}
+          AND cs.status = 1
+        ORDER BY cs.select_time DESC
+    </select>
+</mapper>

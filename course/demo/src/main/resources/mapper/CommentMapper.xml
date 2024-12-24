@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.CommentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.Comment">
+        <id column="id" property="id" />
+        <result column="post_id" property="postId" />
+        <result column="user_id" property="userId" />
+        <result column="content" property="content" />
+        <result column="likes_count" property="likesCount" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, post_id, user_id, content, likes_count, created_at, updated_at
+    </sql>
+
+    <!-- 查询所有评论 -->
+    <select id="pageComments" resultType="com.noa.demo.entity.Comment">
+        SELECT <include refid="Base_Column_List" /> FROM comments
+    </select>
+
+    <!-- 带条件的查询 -->
+    <select id="pageCommentsWithCondition" resultType="com.noa.demo.entity.Comment">
+        SELECT <include refid="Base_Column_List" /> FROM comments ${ew.customSqlSegment}
+    </select>
+
+</mapper>

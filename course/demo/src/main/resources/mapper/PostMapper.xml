@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noa.demo.mapper.PostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.noa.demo.entity.Post">
+        <id column="id" property="id" /> <!-- 主键 -->
+        <result column="user_id" property="userId" /> <!-- 用户ID -->
+        <result column="content" property="content" /> <!-- 内容 -->
+        <result column="image_url" property="imageUrl" /> <!-- 图片链接 -->
+        <result column="likes_count" property="likesCount" /> <!-- 点赞数 -->
+        <result column="bookmarks_count" property="bookmarksCount" /> <!-- 收藏数 -->
+        <result column="created_at" property="createdAt" /> <!-- 创建时间 -->
+        <result column="updated_at" property="updatedAt" /> <!-- 更新时间 -->
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, content, image_url, likes_count, bookmarks_count, created_at, updated_at
+    </sql>
+
+    <!-- 查询所有帖子 -->
+    <select id="pagePosts" resultType="com.noa.demo.entity.Post">
+        SELECT <include refid="Base_Column_List" /> FROM posts
+    </select>
+
+    <!-- 带条件的查询 -->
+    <select id="pagePostsWithCondition" resultType="com.noa.demo.entity.Post">
+        SELECT <include refid="Base_Column_List" /> FROM posts ${ew.customSqlSegment}
+    </select>
+
+    <!-- 查找特定帖子（示例） -->
+    <select id="findPostById" resultType="com.noa.demo.entity.Post">
+        SELECT <include refid="Base_Column_List" />
+        FROM posts
+        WHERE id = #{id}
+    </select>
+
+</mapper>
